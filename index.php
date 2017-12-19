@@ -1,17 +1,25 @@
 <?php
+//linje 3 connecter til databasefilen så der kan komme adgang til databasen
 include("database.php");
+//linje 6-30 definerer at oprette en bruger på hjemmesiden
+//øverste linjer angiver variablerne, hvori der er indsat sanitize for at undgå folk kan hacke
+//de linjer angiver hvad der skal stå i databasen og hvad der skal ske, hvis sanitize fejler = die
 if(isset($_GET["join"])){
 	$username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING) or die("invalid username");
 	$password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING) or die("invalid password");
 	$password = password_hash($password, PASSWORD_DEFAULT);
 	$email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_STRING) or die("invalid username");
 	
+	//nedenfor angives variablene for profilbilledet, når der oprettes bruger. Basename sættes til at gemmes som billedets navn og brugernavnet
+	//strtolower betyder string to lower, dvs alle bogstaver bliver gjort små
 	$mappenavn = "profile_img/";
 	$tidspunkt = round(microtime(true) * 1000);
 	$billede = $mappenavn . $tidspunkt . "-" . basename($_FILES["picture"]["name"]);
 	$billedetype = strtolower(pathinfo($billede,PATHINFO_EXTENSION));
 	$billedefil = $_FILES["picture"];
 	
+	//!= betyder ikke er lig med - altså hvis billedetypen ikke er jpg eller png, så er filtypen ikke understøttet. 
+	//else: hvis den er jpg eller png, så skal filen flyttes til databasen. Og de andre oplysninger også --> bruger oprettet
 	if($billedetype != "jpeg" && $billedetype != "jpg" && $billedetype != "png"){
 		echo '<script>javascript:alert("Image file not supported");</script>';
 	}else{
@@ -26,12 +34,17 @@ if(isset($_GET["join"])){
 		}
 	}
 }
+//nedenfor ses log ind systemet. Den siger: hvis testen 'log ind' er sand, så...:
+//tildel disse variabler 
 if(isset($_GET["login"])){
 	$username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING) or die("invalid username");
 	$password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING) or die("invalid password");
 	
 	$tjeklogin = mysqli_query($con, "SELECT id, username, password FROM user WHERE username='$username'");
 	
+	//Nedenfor betyder 'hvis de returnerede resultater er opfyldt i tjeklogind, så...:
+	//mysqli fetch assoc fetcher et resultat som associative array 
+	//så skal den logge ind og sige welcome, hvis ikke $sessions er lig med det de skal, så sig the user could not be found eller wrong password
 	if(mysqli_num_rows($tjeklogin) > 0){
 		$info = mysqli_fetch_assoc($tjeklogin);
 		if(password_verify($password, $info["password"])){
@@ -47,6 +60,7 @@ if(isset($_GET["login"])){
 	}
 }
 
+//Nedenfor er handlingen til at uploade et moment på siden 
 if(isset($_GET["upload"])){
 	$imagetext = filter_input(INPUT_POST, 'image_text', FILTER_SANITIZE_STRING) or die("invalid image text");
 	
@@ -71,12 +85,15 @@ if(isset($_GET["upload"])){
 	}
 }
 
+//nedenfor er handlingen til at logge ud. Hvis testen er sand, så stop en session og destroy siden og sig see you soon! 
 if(isset($_GET["logout"])){
 	session_unset();
 	session_destroy();
 	echo '<script>javascript:alert("See you soon!");</script>';
 }
 
+//handlingen til at slette et oplsag: hvis der bliver trykket på delete, så tjek om bruger id stemmer overens med databasen og slet billedet 
+//hvis ikke der er samme bruger id, så slet ikke, da personen ikke ejer billedet 
 if(isset($_GET["delete"])){
 	$deleteid = $_GET["delete"];
 	$hentinfo = mysqli_query($con, "SELECT * FROM images WHERE id='{$deleteid}'");
@@ -89,6 +106,9 @@ if(isset($_GET["delete"])){
 	}
 }
 
+//handlingen for at redigere tekst af et delt øjeblik 
+//hvis der skal redigeres, så hent variabelinfo, for at tjekke om bruger id er korrekt og få derfor adgang til at redigere, ellers...: 
+//rediger ikke, da brugeren ikke ejer oplsaget
 if(isset($_GET["update"])){
 	$billedeid = $_POST["image_id"];
 	$billedetext = $_POST["image_text"];
@@ -106,8 +126,9 @@ if(isset($_GET["update"])){
 ?>
 <!DOCTYPE html>
 <html>
+	<!--i head angives først et responsivt meta tag så browseren selv justerer sig efter skærmen, dernæst hentes featherlight css til pop-up-bokse, så refereres der til typekit sheet, dernæst angives alle alfabetets bogstaver, så titel, så hentes font-awesomes bibliotek, så simplegrid, så mit eget stylesheet, så insta stylesheet, så jquery biblioteket, så ...., og til sidst javascript biblioteket-->
    <head>  
-<meta name="viewport" content="width=device-width, initial-scale=1">
+	  <meta name="viewport" content="width=device-width, initial-scale=1">
 	  <link href="css/featherlight.min.css" type="text/css" rel="stylesheet" />
       <link rel="stylesheet" href="https://use.typekit.net/xby8jak.css">
       <meta charset="utf-8">
@@ -129,6 +150,7 @@ if(isset($_GET["update"])){
                   <img src="img/seek.png" class="soeg">
                </div>
             </div>
+			 <!--i a tagget er skrevet void (0) for at undgå siden reloader når man klikker på et menupunkt-->
             <div class="col-6-12 menudiv">
                <div class="content menucontainer">
                   <ul class="menu">
@@ -147,6 +169,7 @@ if(isset($_GET["update"])){
             </div>
             <div class="col-3-12 knapdiv">
                <div class="contentknap">
+				   <!--nedenfor ses hvilke knapper som skal vises afhængig af om man er logget ind eller ej-->
 				  <?php
 				   if(!isset($_SESSION["loggetind"])){
 					   ?>
@@ -161,7 +184,7 @@ if(isset($_GET["update"])){
 				   }
 				   ?>
                </div>
-				
+				<!--nedenfor er menuen og knapperne for mobilversion: responsivt og hvilke knapper som skal vises afhængig af om man er logget ind eller ej-->
             </div>
 			 <div class="burgermenu" id="burgermenu">
 					<i class="fa fa-bars"></i>
