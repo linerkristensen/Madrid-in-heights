@@ -1,0 +1,84 @@
+.insta-billede img {
+	width: 100%;
+    max-width: 100%;
+}
+.insta {
+    border-radius: 3px;
+    box-sizing: border-box;
+    background-color: #fff;
+    border: 1px solid #efefef;
+    width: 100%;
+    margin: .5em;
+    align-self: center;
+}
+.insta-top {
+    display: flex;
+    padding: 1em;
+}
+.insta-top .insta-navn {
+    color: #444;
+    flex-grow: 1;
+    margin: .4em;
+    text-decoration: none;
+}
+.insta-top .insta-tid {
+    color: #ddd;
+    text-decoration: none;
+    padding-top: 5px;
+}
+.insta-indhold {
+    padding: 1.5em;
+    white-space: normal;
+}
+.insta-bund {
+    display: flex;
+    border-top: 1px solid #eee;
+    margin: 0 1.5em 0 1.5em;
+    padding: 1em 0 1em 0;
+    align-items: center;
+}
+.ny {
+    border: 0px;
+    outline: none;
+    font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
+    margin: .5em;
+    flex-grow: 1;
+}
+.nx {
+    color: #ddd;
+    font-size: 1.5em;
+    cursor: pointer;
+}
+
+.insta-person-billede img {
+    width: 30px;
+    height: 30px;
+    border-radius: 100px;
+}
+
+.redigerknap {
+	float: right;
+}
+
+.rediger {
+	color: #000;
+	text-decoration: none;
+}
+
+.redigerknap i:hover {
+	color: red;
+}
+
+.deleteknap {
+	float: right;
+	margin-right: 5px;
+}
+
+.slet {
+	color: #000;
+	text-decoration: none;
+}
+
+.deleteknap i:hover {
+	color: red;
+}
